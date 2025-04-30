@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { usePagination, type UsePaginationProps } from "~/hooks/usePagination";
+import { usePagination, type UsePaginationProps } from "~/hooks";
 import type { GroupedBPMarkets } from "~/lib/utils";
 import {
   Pagination,
@@ -23,9 +23,7 @@ import {
 export type MarketsProps = Pick<
   UsePaginationProps<unknown>,
   "currentPage" | "onPageChange"
-> & {
-  markets: GroupedBPMarkets["markets"];
-};
+> & { markets: GroupedBPMarkets["markets"] };
 
 export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
   const {
@@ -47,7 +45,7 @@ export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
   const formatter = useMemo(() => new Intl.NumberFormat("fa-IR"), []);
 
   return (
-    <Table>
+    <Table className="select-none">
       <TableHeader>
         <TableRow>
           <TableHead className="w-xs">نماد</TableHead>

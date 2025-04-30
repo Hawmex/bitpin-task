@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSwipeable } from "react-swipeable";
 import { Markets } from "~/components/markets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { groupMarkets } from "~/lib/utils";
@@ -6,10 +7,33 @@ import { useGetMarkets } from "~/services/markets";
 
 export default function () {
   const { data: markets, isFetched, isLoading } = useGetMarkets();
+  const groupedMarkets = useMemo(() => groupMarkets(markets ?? []), [markets]);
   const [paginations, setPaginations] = useState<Record<string, number>>({});
   const [currentTab, setCurrentTab] = useState<string>("");
 
-  const groupedMarkets = useMemo(() => groupMarkets(markets ?? []), [markets]);
+  const tabCodes = useMemo(
+    () => groupedMarkets.map(({ marketsBase }) => marketsBase.code),
+    [groupedMarkets],
+  );
+
+  const currentIndex = useMemo(
+    () => tabCodes.indexOf(currentTab),
+    [currentTab, tabCodes],
+  );
+
+  const swipeHandlers = useSwipeable({
+    onSwipedRight: () => {
+      if (currentIndex < tabCodes.length - 1) {
+        setCurrentTab(tabCodes[currentIndex + 1]);
+      }
+    },
+    onSwipedLeft: () => {
+      if (currentIndex > 0) {
+        setCurrentTab(tabCodes[currentIndex - 1]);
+      }
+    },
+    trackMouse: true,
+  });
 
   const handlePageChange = useCallback(
     (code: string) => (currentPage: number) =>
@@ -47,7 +71,7 @@ export default function () {
         ))}
       </TabsList>
       {groupedMarkets.map(({ marketsBase: { code }, markets }) => (
-        <TabsContent key={code} value={code}>
+        <TabsContent key={code} value={code} {...swipeHandlers}>
           <Markets
             markets={markets}
             currentPage={paginations[code] ?? 1}

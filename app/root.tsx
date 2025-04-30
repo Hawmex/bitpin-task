@@ -10,11 +10,10 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
-import { ScrollArea } from "./components/ui/scroll-area";
 import queryClient from "./lib/queryClient";
 
 export const meta: Route.MetaFunction = () => [
-  { title: "تسک بیت‌پین" },
+  { title: "تسک بیت‌پین - حامد اعراب" },
   { charSet: "utf-8" },
   { name: "viewport", content: "width=device-width, initial-scale=1" },
 ];
@@ -54,9 +53,7 @@ export default function () {
   return (
     <Direction.Provider dir="rtl">
       <QueryClientProvider client={queryClient}>
-        <ScrollArea className="h-screen">
-          <Outlet />
-        </ScrollArea>
+        <Outlet />
       </QueryClientProvider>
     </Direction.Provider>
   );
