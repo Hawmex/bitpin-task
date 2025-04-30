@@ -1,30 +1,40 @@
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Direction } from "radix-ui";
 import {
   isRouteErrorResponse,
   Links,
   Meta,
+  Outlet,
   Scripts,
   ScrollRestoration,
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
-import { Providers } from "./components/providers";
+import { ScrollArea } from "./components/ui/scroll-area";
+import queryClient from "./lib/queryClient";
+
+export const meta: Route.MetaFunction = () => [
+  { title: "تسک بیت‌پین" },
+  { charSet: "utf-8" },
+  { name: "viewport", content: "width=device-width, initial-scale=1" },
+];
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
+    rel: "preload stylesheet",
+    as: "style",
+    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
   {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    rel: "preload stylesheet",
+    as: "style",
+    href: "https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css",
   },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fa-IR">
+    <html lang="fa-IR" dir="rtl">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -40,8 +50,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  return <Providers />;
+export default function () {
+  return (
+    <Direction.Provider dir="rtl">
+      <QueryClientProvider client={queryClient}>
+        <ScrollArea className="h-screen">
+          <Outlet />
+        </ScrollArea>
+      </QueryClientProvider>
+    </Direction.Provider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

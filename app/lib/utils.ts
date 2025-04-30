@@ -6,33 +6,29 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export type GroupedBPMarkets = Record<
-  string,
-  {
-    primaryCurrency: Omit<BPCurrency, "code">;
-    secondaryCurrencies: BPCurrency[];
-    marketDetails: Omit<BPMarket, "currency1" | "currency2">;
-  }
->;
+export type GroupedBPMarkets = {
+  marketsBase: BPCurrency;
+  markets: {
+    currency: BPCurrency;
+    details: Omit<BPMarket, "currency1" | "currency2">;
+  }[];
+};
 
-export function groupMarkets(markets: BPMarket[]): GroupedBPMarkets {
-  return markets.reduce((groups, market) => {
-    const {
-      currency1: secondaryCurrency,
-      currency2: { code: primaryCode, ...primaryCurrency },
-      ...marketDetails
-    } = market;
+export function groupMarkets(markets: BPMarket[]): GroupedBPMarkets[] {
+  const groupsMap: Record<string, GroupedBPMarkets> = {};
 
-    if (!groups[primaryCode]) {
-      groups[primaryCode] = {
-        marketDetails,
-        primaryCurrency,
-        secondaryCurrencies: [],
+  for (const market of markets) {
+    const { currency1: currency, currency2: marketsBase, ...details } = market;
+
+    if (!groupsMap[marketsBase.id]) {
+      groupsMap[marketsBase.id] = {
+        marketsBase,
+        markets: [],
       };
     }
 
-    groups[primaryCode].secondaryCurrencies.push(secondaryCurrency);
+    groupsMap[marketsBase.id].markets.push({ currency, details });
+  }
 
-    return groups;
-  }, {} as GroupedBPMarkets);
+  return Object.values(groupsMap);
 }

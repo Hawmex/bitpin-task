@@ -82,7 +82,7 @@ export function useGetMarkets() {
       const res = await axiosClient.get("v1/mkt/markets/");
 
       return (res.data.results as BPMarket[]).sort(
-        (a, b) => Number(a.market_cap) - Number(b.market_cap),
+        (a, b) => Number(b.market_cap) - Number(a.market_cap),
       );
     },
   });

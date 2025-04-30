@@ -1,18 +1,20 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 export type UsePaginationProps<T> = {
   data: T[];
   itemsPerPage: number;
-  initialPage?: number;
+  currentPage: number;
+  onPageChange: (currentPage: number) => void;
 };
 
 export type UsePaginationReturn<T> = {
   currentPageData: T[];
-  currentPage: number;
   totalPages: number;
   goToPage: (page: number) => void;
   nextPage: () => void;
   prevPage: () => void;
+  firstPage: () => void;
+  lastPage: () => void;
   hasNextPage: boolean;
   hasPrevPage: boolean;
 };
@@ -20,10 +22,9 @@ export type UsePaginationReturn<T> = {
 export function usePagination<T>({
   data,
   itemsPerPage,
-  initialPage = 1,
+  currentPage,
+  onPageChange,
 }: UsePaginationProps<T>): UsePaginationReturn<T> {
-  const [currentPage, setCurrentPage] = useState(initialPage);
-
   const totalPages = useMemo(
     () => Math.ceil(data.length / itemsPerPage),
     [data.length, itemsPerPage],
@@ -39,9 +40,9 @@ export function usePagination<T>({
     (page: number) => {
       const newPage = Math.max(1, Math.min(totalPages, page));
 
-      setCurrentPage(newPage);
+      onPageChange(newPage);
     },
-    [totalPages],
+    [onPageChange, totalPages],
   );
 
   const nextPage = useCallback(
@@ -54,6 +55,13 @@ export function usePagination<T>({
     [currentPage, goToPage],
   );
 
+  const firstPage = useCallback(() => goToPage(1), [goToPage]);
+
+  const lastPage = useCallback(
+    () => goToPage(totalPages),
+    [goToPage, totalPages],
+  );
+
   const hasNextPage = useMemo(
     () => currentPage < totalPages,
     [currentPage, totalPages],
@@ -63,11 +71,12 @@ export function usePagination<T>({
 
   return {
     currentPageData,
-    currentPage,
     totalPages,
     goToPage,
     nextPage,
     prevPage,
+    firstPage,
+    lastPage,
     hasNextPage,
     hasPrevPage,
   };
