@@ -1,8 +1,7 @@
-import { Decimal } from "decimal.js";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { usePagination, type UsePaginationProps } from "~/hooks";
-import { type GroupedBPMarkets } from "~/lib/utils";
+import { formatCurrency, type BPMarketsGroup } from "~/lib/utils";
 import {
   Pagination,
   PaginationContent,
@@ -25,9 +24,13 @@ import {
 export type MarketsProps = Pick<
   UsePaginationProps<unknown>,
   "currentPage" | "onPageChange"
-> & { markets: GroupedBPMarkets["markets"] };
+> & { group: BPMarketsGroup };
 
-export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
+export function Markets({
+  group: { markets, baseCurrency },
+  currentPage,
+  onPageChange,
+}: MarketsProps) {
   const navigate = useNavigate();
 
   const {
@@ -55,26 +58,32 @@ export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
     <Table className="select-none">
       <TableHeader>
         <TableRow>
-          <TableHead className="w-xs">نماد</TableHead>
-          <TableHead className="w-2xs">نام</TableHead>
-          <TableHead className="w-3xs">قیمت</TableHead>
-          <TableHead className="w-3xs">حجم بازار</TableHead>
+          <TableHead>نماد</TableHead>
+          <TableHead>نام</TableHead>
+          <TableHead>قیمت</TableHead>
+          <TableHead>حجم بازار</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {currentPageData.map(({ details, currency }) => (
-          <TableRow key={details.code} onClick={handleClick(details.id)}>
-            <TableCell className="font-medium">
-              <div className="flex flex-row gap-2 items-center">
-                <img className="w-6 h-6" src={currency.image} />
-                <span>{currency.code}</span>
-              </div>
-            </TableCell>
-            <TableCell>{currency.title_fa}</TableCell>
-            <TableCell>{new Decimal(details.price).toString()}</TableCell>
-            <TableCell>{new Decimal(details.market_cap).toString()}</TableCell>
-          </TableRow>
-        ))}
+        {currentPageData.map(
+          ({ details, currency: { image, code, title_fa } }) => (
+            <TableRow key={details.code} onClick={handleClick(details.id)}>
+              <TableCell className="font-medium">
+                <div className="flex flex-row gap-2 items-center w-max">
+                  <img className="w-6 h-6" src={image} />
+                  <span>{code}</span>
+                </div>
+              </TableCell>
+              <TableCell>{title_fa}</TableCell>
+              <TableCell>
+                {formatCurrency(details.price, baseCurrency)}
+              </TableCell>
+              <TableCell>
+                {formatCurrency(details.market_cap, baseCurrency)}
+              </TableCell>
+            </TableRow>
+          ),
+        )}
       </TableBody>
       <TableFooter>
         <TableRow>

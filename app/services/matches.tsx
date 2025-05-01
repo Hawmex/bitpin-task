@@ -10,9 +10,7 @@ export type BPMatch = {
   match_id: string;
 };
 
-export type UseGetMatchesProps = {
-  marketId: number;
-};
+export type UseGetMatchesProps = { marketId: number };
 
 export function useGetMatches({ marketId }: UseGetMatchesProps) {
   return useQuery({

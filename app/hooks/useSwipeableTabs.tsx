@@ -1,9 +1,7 @@
 import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { useSwipeable, type SwipeableHandlers } from "react-swipeable";
 
-export type UseSwipeableTabsProps = {
-  values: string[];
-};
+export type UseSwipeableTabsProps = { values: string[] };
 
 export type UseSwipeableTabsReturn = {
   tabsValue: string;
@@ -33,6 +31,9 @@ export function useSwipeableTabs({
       }
     },
     trackMouse: true,
+    trackTouch: true,
+    swipeDuration: 250,
+    delta: 100,
   });
 
   return { tabsValue, setTabsValue, tabSwipeHandlers };

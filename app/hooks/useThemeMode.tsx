@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { usePersistentState } from "~/hooks";
+import { useMemo } from "react";
+import { useMediaQuery, usePersistentState } from "~/hooks";
 
 export type UseThemeModeReturn = {
   themeModeName: "dark" | "light" | "system";
@@ -18,7 +18,7 @@ export function useThemeMode(): UseThemeModeReturn {
     defaultValue: "system",
   });
 
-  const [isSystemDark, setIsSystemDark] = useState(false);
+  const isSystemDark = useMediaQuery("(prefers-color-scheme: dark)");
 
   const themeModeValue = useMemo<UseThemeModeReturn["themeModeValue"]>(
     () =>
@@ -29,18 +29,6 @@ export function useThemeMode(): UseThemeModeReturn {
         : themeModeName,
     [isSystemDark, themeModeName],
   );
-
-  useEffect(() => {
-    const queryList = matchMedia("(prefers-color-scheme: dark)");
-
-    const listener = (event: MediaQueryListEvent) => {
-      setIsSystemDark(event.matches);
-    };
-
-    queryList.addEventListener("change", listener);
-
-    return () => queryList.removeEventListener("change", listener);
-  }, []);
 
   return { themeModeName, themeModeValue, setThemeModeName };
 }
