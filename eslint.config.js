@@ -18,7 +18,7 @@ export default defineConfig([
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   reactHooks.configs["recommended-latest"],
-  { ignores: [".react-router/**/*"] },
+  { ignores: [".react-router/**/*", "build/**/*"] },
   {
     rules: {
       "react/display-name": "off",
