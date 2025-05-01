@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useCallback } from "react";
+import { useNavigate } from "react-router";
 import { usePagination, type UsePaginationProps } from "~/hooks";
-import type { GroupedBPMarkets } from "~/lib/utils";
+import { numFormatter, type GroupedBPMarkets } from "~/lib/utils";
 import {
   Pagination,
   PaginationContent,
@@ -26,6 +27,8 @@ export type MarketsProps = Pick<
 > & { markets: GroupedBPMarkets["markets"] };
 
 export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
+  const navigate = useNavigate();
+
   const {
     currentPageData,
     hasNextPage,
@@ -42,7 +45,10 @@ export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
     onPageChange,
   });
 
-  const formatter = useMemo(() => new Intl.NumberFormat("fa-IR"), []);
+  const handleClick = useCallback(
+    (id: number) => () => navigate(`${id}`),
+    [navigate],
+  );
 
   return (
     <Table className="select-none">
@@ -56,7 +62,7 @@ export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
       </TableHeader>
       <TableBody>
         {currentPageData.map(({ details, currency }) => (
-          <TableRow key={details.code}>
+          <TableRow key={details.code} onClick={handleClick(details.id)}>
             <TableCell className="font-medium">
               <div className="flex flex-row gap-2 items-center">
                 <img className="w-6 h-6" src={currency.image} />
@@ -64,9 +70,9 @@ export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
               </div>
             </TableCell>
             <TableCell>{currency.title_fa}</TableCell>
-            <TableCell>{formatter.format(Number(details.price))}</TableCell>
+            <TableCell>{numFormatter.format(Number(details.price))}</TableCell>
             <TableCell>
-              {formatter.format(Number(details.market_cap))}
+              {numFormatter.format(Number(details.market_cap))}
             </TableCell>
           </TableRow>
         ))}

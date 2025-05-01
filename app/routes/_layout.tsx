@@ -22,7 +22,7 @@ export default function () {
   }, [themeModeValue]);
 
   return (
-    <ScrollArea className="h-screen">
+    <ScrollArea className="h-screen [&>div>div]:h-full [&>div>div]:!flex [&>div>div]:!flex-col">
       <div className="grid grid-cols-[1fr_max-content_1fr] w-full p-2 items-center sticky top-0 z-10 bg-background border-b-1 gap-2">
         <div className="flex gap-2 justify-start"></div>
         <span className="font-bold text-center select-none">بیت‌پین</span>

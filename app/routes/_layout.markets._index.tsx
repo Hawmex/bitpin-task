@@ -1,38 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSwipeable } from "react-swipeable";
+import { Loading } from "~/components/loading";
 import { Markets } from "~/components/markets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useSwipeableTabs } from "~/hooks";
 import { groupMarkets } from "~/lib/utils";
-import { useGetMarkets } from "~/services/markets";
+import { useGetMarkets } from "~/services";
 
 export default function () {
   const { data: markets, isFetched, isLoading } = useGetMarkets();
   const groupedMarkets = useMemo(() => groupMarkets(markets ?? []), [markets]);
   const [paginations, setPaginations] = useState<Record<string, number>>({});
-  const [currentTab, setCurrentTab] = useState<string>("");
 
-  const tabCodes = useMemo(
-    () => groupedMarkets.map(({ marketsBase }) => marketsBase.code),
-    [groupedMarkets],
-  );
-
-  const currentIndex = useMemo(
-    () => tabCodes.indexOf(currentTab),
-    [currentTab, tabCodes],
-  );
-
-  const swipeHandlers = useSwipeable({
-    onSwipedRight: () => {
-      if (currentIndex < tabCodes.length - 1) {
-        setCurrentTab(tabCodes[currentIndex + 1]);
-      }
-    },
-    onSwipedLeft: () => {
-      if (currentIndex > 0) {
-        setCurrentTab(tabCodes[currentIndex - 1]);
-      }
-    },
-    trackMouse: true,
+  const { tabsValue, setTabsValue, tabSwipeHandlers } = useSwipeableTabs({
+    values: groupedMarkets.map(({ marketsBase }) => marketsBase.code),
   });
 
   const handlePageChange = useCallback(
@@ -45,21 +25,15 @@ export default function () {
   );
 
   useEffect(() => {
-    if (currentTab === "" && isFetched) {
-      setCurrentTab(groupedMarkets![0].marketsBase.code);
+    if (tabsValue === "" && isFetched) {
+      setTabsValue(groupedMarkets![0].marketsBase.code);
     }
-  }, [currentTab, groupedMarkets, isFetched]);
+  }, [tabsValue, setTabsValue, groupedMarkets, isFetched]);
 
   return isLoading ? (
-    <div className="flex h-screen w-screen items-center justify-center">
-      لطفا شکیبا باشید...
-    </div>
+    <Loading />
   ) : (
-    <Tabs
-      value={currentTab}
-      onValueChange={setCurrentTab}
-      className="w-full p-2 m-auto"
-    >
+    <Tabs value={tabsValue} onValueChange={setTabsValue} className="w-full p-2">
       <TabsList className="w-full flex flex-row">
         {groupedMarkets.map(({ marketsBase: { code, image, title_fa } }) => (
           <TabsTrigger className="grow-1" key={code} value={code}>
@@ -71,7 +45,7 @@ export default function () {
         ))}
       </TabsList>
       {groupedMarkets.map(({ marketsBase: { code }, markets }) => (
-        <TabsContent key={code} value={code} {...swipeHandlers}>
+        <TabsContent key={code} value={code} {...tabSwipeHandlers}>
           <Markets
             markets={markets}
             currentPage={paginations[code] ?? 1}

@@ -27,7 +27,7 @@ export type UsePersistentStateProps<T extends JSONValue> = {
   defaultValue: T;
 };
 
-export type UsePersistentStateResult<T extends JSONValue> = [
+export type UsePersistentStateReturn<T extends JSONValue> = [
   T,
   Dispatch<SetStateAction<T>>,
 ];
@@ -36,11 +36,11 @@ export function usePersistentState<T extends JSONValue>({
   persistence,
   key,
   defaultValue,
-}: UsePersistentStateProps<T>): UsePersistentStateResult<T> {
+}: UsePersistentStateProps<T>): UsePersistentStateReturn<T> {
   const storage = useMemo(() => getStorage(persistence), [persistence]);
   const [state, _setState] = useState(deserialize<T>(storage.getItem(key)));
 
-  const setState = useCallback<UsePersistentStateResult<T>[1]>(
+  const setState = useCallback<UsePersistentStateReturn<T>[1]>(
     (value) => {
       setPersistentValue({
         key,

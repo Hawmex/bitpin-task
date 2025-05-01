@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { BPCurrency, BPMarket } from "~/services/markets";
+import type { BPCurrency, BPMarket } from "~/services";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,3 +32,5 @@ export function groupMarkets(markets: BPMarket[]): GroupedBPMarkets[] {
 
   return Object.values(groupsMap);
 }
+
+export const numFormatter = new Intl.NumberFormat("fa-IR");

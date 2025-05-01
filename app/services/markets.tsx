@@ -78,6 +78,7 @@ export type BPMarket = {
 export function useGetMarkets() {
   return useQuery({
     queryKey: ["markets"],
+    refetchInterval: 10 * 1000,
     queryFn: async () => {
       const res = await axiosClient.get("v1/mkt/markets/");
 
