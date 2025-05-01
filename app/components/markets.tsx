@@ -1,7 +1,8 @@
+import { Decimal } from "decimal.js";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { usePagination, type UsePaginationProps } from "~/hooks";
-import { numFormatter, type GroupedBPMarkets } from "~/lib/utils";
+import { type GroupedBPMarkets } from "~/lib/utils";
 import {
   Pagination,
   PaginationContent,
@@ -70,10 +71,8 @@ export function Markets({ markets, currentPage, onPageChange }: MarketsProps) {
               </div>
             </TableCell>
             <TableCell>{currency.title_fa}</TableCell>
-            <TableCell>{numFormatter.format(Number(details.price))}</TableCell>
-            <TableCell>
-              {numFormatter.format(Number(details.market_cap))}
-            </TableCell>
+            <TableCell>{new Decimal(details.price).toString()}</TableCell>
+            <TableCell>{new Decimal(details.market_cap).toString()}</TableCell>
           </TableRow>
         ))}
       </TableBody>

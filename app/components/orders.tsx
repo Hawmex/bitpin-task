@@ -1,9 +1,11 @@
-import { numFormatter } from "~/lib/utils";
+import Decimal from "decimal.js";
+import { useCallback } from "react";
 import { useGetOrders, type BPOrder } from "~/services";
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -12,6 +14,21 @@ import {
 type OrdersProps = { orders: BPOrder[]; isLoading: boolean };
 
 function Orders({ orders }: OrdersProps) {
+  const total = useCallback(
+    (field: keyof BPOrder) =>
+      orders.reduce((prev, curr) => prev + Number(curr[field]), 0),
+    [orders],
+  );
+
+  const product = useCallback(
+    (field1: keyof BPOrder, field2: keyof BPOrder) =>
+      orders.reduce(
+        (prev, curr) => prev + Number(curr[field1]) * Number(curr[field2]),
+        0,
+      ),
+    [orders],
+  );
+
   return (
     <Table className="select-none">
       <TableHeader>
@@ -25,13 +42,25 @@ function Orders({ orders }: OrdersProps) {
       <TableBody>
         {orders.slice(0, 10).map(({ price, remain, value, amount }) => (
           <TableRow key={`${amount}_${price}_${remain}_${value}`}>
-            <TableCell>{numFormatter.format(Number(amount))}</TableCell>
-            <TableCell>{numFormatter.format(Number(price))}</TableCell>
-            <TableCell>{numFormatter.format(Number(value))}</TableCell>
-            <TableCell>{numFormatter.format(Number(remain))}</TableCell>
+            <TableCell>{new Decimal(amount).toString()}</TableCell>
+            <TableCell>{new Decimal(price).toString()}</TableCell>
+            <TableCell>{new Decimal(value).toString()}</TableCell>
+            <TableCell>{new Decimal(remain).toString()}</TableCell>
           </TableRow>
         ))}
       </TableBody>
+      <TableFooter className="bg-muted/50">
+        <TableRow>
+          <TableCell>{new Decimal(total("amount")).toString()}</TableCell>
+          <TableCell>
+            {new Decimal(
+              product("amount", "price") / total("amount"),
+            ).toString()}
+          </TableCell>
+          <TableCell>{new Decimal(total("value")).toString()}</TableCell>
+          <TableCell>{new Decimal(total("remain")).toString()}</TableCell>
+        </TableRow>
+      </TableFooter>
     </Table>
   );
 }

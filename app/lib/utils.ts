@@ -32,5 +32,3 @@ export function groupMarkets(markets: BPMarket[]): GroupedBPMarkets[] {
 
   return Object.values(groupsMap);
 }
-
-export const numFormatter = new Intl.NumberFormat("fa-IR");
