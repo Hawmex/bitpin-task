@@ -69,7 +69,7 @@ function Orders({
     <Loading />
   ) : (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row gap-4 items-center">
+      <div className="flex flex-row gap-x-4 gap-y-2 items-center flex-wrap">
         <div className="relative w-40">
           <Input
             type="text"
@@ -85,19 +85,12 @@ function Orders({
           </span>
         </div>
         {!!shareNum && (
-          <div className="flex flex-row gap-4 min-w-max [&>div]:flex [&>div]:flex-row [&>div]:gap-1">
-            <div>
-              <span>مقدار:</span>
-              <span>{formatCurrency(totRemain * shareNum, currency1)}</span>
-            </div>
-            <div>
-              <span>قیمت:</span>
-              <span>{formatCurrency(avgPrice, currency2)}</span>
-            </div>
-            <div>
-              <span>ارزش:</span>
-              <span>{formatCurrency(totValue * shareNum, currency2)}</span>
-            </div>
+          <div className="flex flex-row flex-wrap gap-4">
+            <span>
+              مقدار: {formatCurrency(totRemain * shareNum, currency1)}
+            </span>
+            <span>قیمت: {formatCurrency(avgPrice, currency2)}</span>
+            <span>ارزش: {formatCurrency(totValue * shareNum, currency2)}</span>
           </div>
         )}
       </div>

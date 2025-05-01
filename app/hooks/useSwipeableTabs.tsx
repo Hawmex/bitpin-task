@@ -32,7 +32,7 @@ export function useSwipeableTabs({
     },
     trackMouse: true,
     trackTouch: true,
-    swipeDuration: 250,
+    swipeDuration: 500,
     delta: 100,
   });
 
